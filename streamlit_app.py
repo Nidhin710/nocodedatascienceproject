@@ -71,6 +71,8 @@ if uploaded_file is not None:
                 
                 lr = LinearRegression()
                 lr.fit(X_train, y_train)
+                with st.spinner("Loading..."):
+                    time.sleep(5)
                 st.success("Model Trained Successfully")
 
                 # User input for prediction
