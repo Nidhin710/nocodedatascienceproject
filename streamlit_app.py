@@ -2,6 +2,19 @@ import streamlit as st
 import pandas as pd
 from pandas.api import types
 
+# Function to determine if a column is discrete
+def is_discrete(column):
+    unique_values_ratio = len(column.unique()) / len(column)
+    # If the unique values are less than 10% of the total values, consider it discrete
+    if unique_values_ratio < 0.1:
+        return True
+    
+    return False
+
+# Function to determine if a column is numerical or categorical
+def is_numerical(column):
+    return types.is_numeric_dtype(column)
+
 # Show title and description.
 st.title("No Code Datascience Project")
 
@@ -15,7 +28,7 @@ if uploaded_file is not None:
     elif uploaded_file.type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
         df = pd.read_excel(uploaded_file, engine='openpyxl')
     else:
-        st.error("please upload a valid document from above mentioned type")
+        st.error("Please upload a valid document from the above-mentioned types")
 
     # Display the first few rows of the dataframe
     st.write("First few rows of the uploaded dataset:")
@@ -29,9 +42,12 @@ if uploaded_file is not None:
         st.write(f"Selected target column: {target_column}")
         st.write(f"Data type: {df[target_column].dtype}")
         st.write(f"Number of unique values: {df[target_column].nunique()}")
-        
-        if types.is_numeric_dtype(df[target_column]):
-            st.write('Numerical')
-        else:
-            st.write('Categorical')
 
+        if is_numerical(df[target_column]):
+            st.write("The selected column is numerical.")
+            if is_discrete(df[target_column]):
+                st.write("The selected column is discrete.")
+            else:
+                st.write("The selected column is continuous.")
+        else:
+            st.write("The selected column is categorical.")
