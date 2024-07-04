@@ -17,13 +17,15 @@ def is_numerical(column):
 
 def select_features(df, target_column):
     if is_numerical(df[target_column]):
+        # Select only numeric columns
+        numeric_df = df.select_dtypes(include=[float, int])
         # For numerical target, use correlation
-        corr_matrix = df.corr()
+        corr_matrix = numeric_df.corr()
         correlations = corr_matrix[target_column].abs().sort_values(ascending=False)
         selected_features = correlations.index[1:]  # Exclude target column itself
         return selected_features
 
-# Show title and description.
+# Show title and description
 st.title("No Code Datascience Project")
 
 # File uploader widget
@@ -52,9 +54,9 @@ if uploaded_file is not None:
         st.write(f"Number of unique values: {uploaded_dataset[target_column].nunique()}")
 
         if is_numerical(uploaded_dataset[target_column]):
-            selected_features = select_features(uploaded_dataset,target_column)
+            selected_features = select_features(uploaded_dataset, target_column)
             st.write("The selected column is numerical.")
-            st.write(f"The selected features column {selected_features}")
+            st.write(f"Selected features: {list(selected_features)}")
             if is_discrete(uploaded_dataset[target_column]):
                 st.write("The selected column is discrete.")
             else:
