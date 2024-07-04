@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-import time
+import numpy as np
 from pandas.api import types
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
@@ -68,7 +68,7 @@ if uploaded_file is not None:
             else:
                 X = uploaded_dataset[selected_features]
                 y = uploaded_dataset[target_column]
-                X_train, X_test, y_train, y_test = train_test_split(X, y)
+                X_train, X_test, y_train, y_test = train_test_split(X, y, random_state=42)
                 
                 lr = LinearRegression()
                 lr.fit(X_train, y_train)
@@ -78,7 +78,7 @@ if uploaded_file is not None:
                 st.write("Enter the feature values for prediction:")
                 input_values = {}
                 for feature in selected_features:
-                    input_values[feature] = st.number_input(f'Enter {feature}')
+                    input_values[feature] = st.number_input(f'Enter {feature}', value=0)
 
                 input_pred = pd.DataFrame([input_values])
                 st.write("Input for prediction:")
@@ -86,8 +86,11 @@ if uploaded_file is not None:
 
                 # Make prediction based on user input
                 if st.button('Predict'):
-                    user_pred = lr.predict(input_pred)
-                    st.write(f"Your Prediction is {round(user_pred[0])}")
+                    try:
+                        user_pred = lr.predict(input_pred)
+                        st.write(f"Your Prediction is {round(user_pred[0])}")
+                    except Exception as e:
+                        st.error(f"Prediction Error: {e}")
                 
         else:
             st.write("The selected column is categorical.")
