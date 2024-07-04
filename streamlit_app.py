@@ -68,7 +68,7 @@ if uploaded_file is not None:
             else:
                 X = uploaded_dataset[selected_features]
                 y = uploaded_dataset[target_column]
-                X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3, random_state=42)
+                X_train, X_test, y_train, y_test = train_test_split(X, y)
                 
                 lr = LinearRegression()
                 lr.fit(X_train, y_train)
