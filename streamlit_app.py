@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import time
-import math
 from pandas.api import types
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
@@ -88,7 +87,7 @@ if uploaded_file is not None:
                 # Make prediction based on user input
                 if st.button('Predict'):
                     user_pred = lr.predict(input_pred)
-                    st.write(f"Your Prediction is {math.round(user_pred[0])}")
+                    st.write(f"Your Prediction is {round(user_pred[0])}")
                 
         else:
             st.write("The selected column is categorical.")
