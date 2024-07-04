@@ -43,11 +43,15 @@ if uploaded_file is not None:
     # Display the first few rows of the dataframe
     st.write("First few rows of the uploaded dataset:")
     st.write(uploaded_dataset.head())
-
-    # Allow user to select the target column
+    
+    # Drop columns that contain any of the specified keywords
+    keywords_to_exclude = ['id', 'name', 'contact']
+    columns_to_exclude = [col for col in uploaded_dataset.columns if any(keyword in col.lower() for keyword in keywords_to_exclude)]
+    if columns_to_exclude:
+        uploaded_dataset = uploaded_dataset.drop(columns=columns_to_exclude)
     target_column = st.selectbox("Select the target column", uploaded_dataset.columns)
 
-    # Optional: Display some information about the selected column
+    
     if target_column:
         st.write(f"Selected target column: {target_column}")
         st.write(f"Data type: {uploaded_dataset[target_column].dtype}")
