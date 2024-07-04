@@ -66,14 +66,14 @@ if uploaded_file is not None:
             if is_discrete(uploaded_dataset[target_column]):
                 st.write("The target column is discrete.")
             else:
+                with st.spinner("Loading..."):
+                    time.sleep(5)
                 X = uploaded_dataset[selected_features]
                 y = uploaded_dataset[target_column]
                 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
                 
                 lr = LinearRegression()
                 lr.fit(X_train, y_train)
-                with st.spinner("Loading..."):
-                    time.sleep(5)
                 st.success("Model Trained Successfully")
 
                 # User input for prediction
