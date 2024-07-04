@@ -1,5 +1,6 @@
 import streamlit as st
 import pandas as pd
+from pandas.api import types
 
 # Show title and description.
 st.title("No Code Datascience Project")
@@ -26,6 +27,9 @@ if uploaded_file is not None:
         st.write(f"Selected target column: {target_column}")
         st.write(f"Data type: {df[target_column].dtype}")
         st.write(f"Number of unique values: {df[target_column].nunique()}")
+        
+        if types.is_numeric_dtype(df[target_column]):
+            st.write('Numerical')
+        else:
+            st.write('Categorical')
 
-    # Proceed with further analysis or model selection based on the selected column
-    # You can add more widgets or functionality here as per your application's logic
