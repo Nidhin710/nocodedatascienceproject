@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 from pandas.api import types
 from sklearn.model_selection import train_test_split
+from sklearn.linear_model import LinearRegression
 
 # Function to determine if a column is discrete
 def is_discrete(column):
@@ -50,9 +51,9 @@ if uploaded_file is not None:
     columns_to_exclude = [col for col in uploaded_dataset.columns if any(keyword in col.lower() for keyword in keywords_to_exclude)]
     if columns_to_exclude:
         uploaded_dataset = uploaded_dataset.drop(columns=columns_to_exclude)
+        
     target_column = st.selectbox("Select the target column", uploaded_dataset.columns)
 
-    
     if target_column:
         st.write(f"Selected target column: {target_column}")
         st.write(f"Data type: {uploaded_dataset[target_column].dtype}")
@@ -62,17 +63,21 @@ if uploaded_file is not None:
             selected_features = select_features(uploaded_dataset, target_column)
             st.write("The selected column is numerical.")
             st.write(f"Selected features: {list(selected_features)}")
+            
             if is_discrete(uploaded_dataset[target_column]):
-                pass
+                st.write("The target column is discrete.")
             else:
                 x = uploaded_dataset[selected_features]
                 y = uploaded_dataset[target_column]
-                x_train,x_test,y_train,y_test = train_test_split(x,y)
-                from sklearn.linear_model import LinearRegression
+                x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
+                
                 lr = LinearRegression()
                 lr.fit(x_train, y_train)
-                y_pred = lr.predict(X_test)
-                st.write(f'System test - {list(x_test)}')
-                st.write(f'System Predication - {list(y_pred)}')
+                y_pred = lr.predict(x_test)
+                
+                # Display some predictions
+                st.write("Sample predictions:")
+                sample_results = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
+                st.write(sample_results.head())
         else:
             st.write("The selected column is categorical.")
