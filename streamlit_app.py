@@ -7,10 +7,8 @@ from sklearn.linear_model import LinearRegression
 # Function to determine if a column is discrete
 def is_discrete(column):
     unique_values_ratio = len(column.unique()) / len(column)
-    # If the unique values are less than 10% of the total values, consider it discrete
     if unique_values_ratio < 0.1:
         return True
-    
     return False
 
 # Function to determine if a column is numerical or categorical
@@ -67,16 +65,28 @@ if uploaded_file is not None:
             if is_discrete(uploaded_dataset[target_column]):
                 st.write("The target column is discrete.")
             else:
-                x = uploaded_dataset[selected_features]
+                X = uploaded_dataset[selected_features]
                 y = uploaded_dataset[target_column]
-                x_train, x_test, y_train, y_test = train_test_split(x, y, test_size=0.2)
+                X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
                 
                 lr = LinearRegression()
-                lr.fit(x_train, y_train)
+                lr.fit(X_train, y_train)
                 st.success("Model Trained Successfully")
-                input_pred = st.text_input('please enter the prediction value.. ')
-                y_pred = lr.predict(input_pred)
-                st.write(f"Your Prediction is {y_pred}")
+
+                # User input for prediction
+                st.write("Enter the feature values for prediction:")
+                input_values = {}
+                for feature in selected_features:
+                    input_values[feature] = st.number_input(f'Enter {feature}', value=float(X[feature].mean()))
+
+                input_pred = pd.DataFrame([input_values])
+                st.write("Input for prediction:")
+                st.write(input_pred)
+
+                # Make prediction based on user input
+                if st.button('Predict'):
+                    user_pred = lr.predict(input_pred)
+                    st.write(f"Your Prediction is {user_pred[0]}")
                 
         else:
             st.write("The selected column is categorical.")
