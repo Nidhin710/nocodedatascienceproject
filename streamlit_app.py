@@ -77,7 +77,7 @@ if uploaded_file is not None:
                 st.write("Enter the feature values for prediction:")
                 input_values = {}
                 for feature in selected_features:
-                    input_values[feature] = st.number_input(f'Enter {feature}', value=float(X[feature].mean()))
+                    input_values[feature] = st.number_input(f'Enter {feature}')
 
                 input_pred = pd.DataFrame([input_values])
                 st.write("Input for prediction:")
