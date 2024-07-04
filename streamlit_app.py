@@ -15,6 +15,14 @@ def is_discrete(column):
 def is_numerical(column):
     return types.is_numeric_dtype(column)
 
+def select_features(df, target_column):
+    if is_numerical(df[target_column]):
+        # For numerical target, use correlation
+        corr_matrix = df.corr()
+        correlations = corr_matrix[target_column].abs().sort_values(ascending=False)
+        selected_features = correlations.index[1:]  # Exclude target column itself
+        return selected_features
+
 # Show title and description.
 st.title("No Code Datascience Project")
 
@@ -24,28 +32,30 @@ uploaded_file = st.file_uploader("Upload the dataset (.csv or .xlsx)", type=("cs
 if uploaded_file is not None:
     # Check the file type
     if uploaded_file.type == "text/csv":
-        df = pd.read_csv(uploaded_file)
+        uploaded_dataset = pd.read_csv(uploaded_file)
     elif uploaded_file.type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
-        df = pd.read_excel(uploaded_file, engine='openpyxl')
+        uploaded_dataset = pd.read_excel(uploaded_file, engine='openpyxl')
     else:
         st.error("Please upload a valid document from the above-mentioned types")
 
     # Display the first few rows of the dataframe
     st.write("First few rows of the uploaded dataset:")
-    st.write(df.head())
+    st.write(uploaded_dataset.head())
 
     # Allow user to select the target column
-    target_column = st.selectbox("Select the target column", df.columns)
+    target_column = st.selectbox("Select the target column", uploaded_dataset.columns)
 
     # Optional: Display some information about the selected column
     if target_column:
         st.write(f"Selected target column: {target_column}")
-        st.write(f"Data type: {df[target_column].dtype}")
-        st.write(f"Number of unique values: {df[target_column].nunique()}")
+        st.write(f"Data type: {uploaded_dataset[target_column].dtype}")
+        st.write(f"Number of unique values: {uploaded_dataset[target_column].nunique()}")
 
-        if is_numerical(df[target_column]):
+        if is_numerical(uploaded_dataset[target_column]):
+            selected_features = select_features(uploaded_dataset,target_column)
             st.write("The selected column is numerical.")
-            if is_discrete(df[target_column]):
+            st.write(f"The selected features column {selected_features}")
+            if is_discrete(uploaded_dataset[target_column]):
                 st.write("The selected column is discrete.")
             else:
                 st.write("The selected column is continuous.")
