@@ -1,9 +1,9 @@
 import streamlit as st
 import pandas as pd
 
-
 # Show title and description.
 st.title("No Code Datascience Project")
+
 # File uploader widget
 uploaded_file = st.file_uploader("Upload the dataset (.csv or .xlsx)", type=("csv", "xlsx"))
 
@@ -17,3 +17,15 @@ if uploaded_file is not None:
     # Display the first few rows of the dataframe
     st.write("First few rows of the uploaded dataset:")
     st.write(df.head())
+
+    # Allow user to select the target column
+    target_column = st.selectbox("Select the target column", df.columns)
+
+    # Optional: Display some information about the selected column
+    if target_column:
+        st.write(f"Selected target column: {target_column}")
+        st.write(f"Data type: {df[target_column].dtype}")
+        st.write(f"Number of unique values: {df[target_column].nunique()}")
+
+    # Proceed with further analysis or model selection based on the selected column
+    # You can add more widgets or functionality here as per your application's logic
