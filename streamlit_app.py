@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 from pandas.api import types
+from sklearn.model_selection import train_test_split
 
 # Function to determine if a column is discrete
 def is_discrete(column):
@@ -62,8 +63,16 @@ if uploaded_file is not None:
             st.write("The selected column is numerical.")
             st.write(f"Selected features: {list(selected_features)}")
             if is_discrete(uploaded_dataset[target_column]):
-                st.write("The selected column is discrete.")
+                pass
             else:
-                st.write("The selected column is continuous.")
+                x = uploaded_dataset[selected_features]
+                y = uploaded_dataset[target_column]
+                x_train,x_test,y_train,y_test = train_test_split(x,y)
+                from sklearn.linear_model import LinearRegression
+                lr = LinearRegression()
+                lr.fit(x_train, y_train)
+                y_pred = model.predict(X_test)
+                st.write(f'System test - {list(x_test)}')
+                st.write(f'System Predication - {list(y_pred)}')
         else:
             st.write("The selected column is categorical.")
