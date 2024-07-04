@@ -73,11 +73,10 @@ if uploaded_file is not None:
                 
                 lr = LinearRegression()
                 lr.fit(x_train, y_train)
-                y_pred = lr.predict(x_test)
+                st.success("Model Trained Successfully")
+                input_pred = st.text_input('please enter the prediction value.. ')
+                y_pred = lr.predict(input_pred)
+                st.write(f"Your Prediction is {y_pred}")
                 
-                # Display some predictions
-                st.write("Sample predictions:")
-                sample_results = pd.DataFrame({'Actual': y_test, 'Predicted': y_pred})
-                st.write(sample_results.head())
         else:
             st.write("The selected column is categorical.")
