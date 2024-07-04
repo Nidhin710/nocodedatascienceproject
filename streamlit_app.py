@@ -71,7 +71,7 @@ if uploaded_file is not None:
                 from sklearn.linear_model import LinearRegression
                 lr = LinearRegression()
                 lr.fit(x_train, y_train)
-                y_pred = model.predict(X_test)
+                y_pred = lr.predict(X_test)
                 st.write(f'System test - {list(x_test)}')
                 st.write(f'System Predication - {list(y_pred)}')
         else:
