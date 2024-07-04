@@ -10,6 +10,7 @@ uploaded_file = st.file_uploader("Upload the dataset (.csv or .xlsx)", type=("cs
 
 if uploaded_file is not None:
     # Check the file type
+    st.write(uploaded_file.type)
     if uploaded_file.type == "text/csv":
         df = pd.read_csv(uploaded_file)
     elif uploaded_file.type == "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet":
