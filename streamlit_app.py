@@ -4,6 +4,8 @@ import numpy as np
 from pandas.api import types
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression
+from sklearn.preprocessing import PolynomialFeatures
+from sklearn.metrics import r2_score
 
 # Function to determine if a column is discrete
 def is_discrete(column):
@@ -25,6 +27,31 @@ def select_features(df, target_column):
         correlations = corr_matrix[target_column].abs().sort_values(ascending=False)
         selected_features = correlations.index[1:]  # Exclude target column itself
         return selected_features
+    
+def evaluate_polynomial_regression(X_train, X_test, y_train, y_test, r2_linear, max_degree=5):
+    best_degree = 1
+    best_r2 = r2_linear
+    best_y_pred_poly = None
+    for degree in range(2, max_degree + 1):
+        polynomial_features = PolynomialFeatures(degree=degree)
+        X_train_poly = polynomial_features.fit_transform(X_train)
+        X_test_poly = polynomial_features.transform(X_test)
+        
+        poly_model = LinearRegression()
+        poly_model.fit(X_train_poly, y_train)
+        
+        y_pred_poly = poly_model.predict(X_test_poly)
+        r2_poly = r2_score(y_test, y_pred_poly)
+        
+        print(f"Polynomial Regression (degree={degree}) R-squared: {r2_poly}")
+        
+        if r2_poly > best_r2:
+            best_r2 = r2_poly
+            best_degree = degree
+            best_y_pred_poly = y_pred_poly
+    
+    return best_degree, best_r2, best_y_pred_poly
+
 
 # Show title and description
 st.title("No Code Datascience Project")
@@ -88,7 +115,20 @@ if uploaded_file is not None:
                 if st.button('Predict'):
                     try:
                         user_pred = lr.predict(input_pred)
-                        st.write(f"Your Prediction is {round(user_pred[0])}")
+                        r2_linear = r2_score(y_test, lr.predict(X_test))
+                        print(f"R-squared: {r2_linear}")
+
+                        # Check if R2 is above 0.80 (80%)
+                        if r2_linear > 0.80:
+                            st.write(f"Your Prediction is {round(user_pred[0])}")
+                        else:
+                            best_degree, best_r2, best_y_pred_poly = evaluate_polynomial_regression(X_train, X_test, y_train, y_test, r2_linear)
+                            if best_y_pred_poly is not None:
+                                st.write(f"The polynomial model with degree {best_degree} achieves a score above 80% (R-squared: {best_r2}).")
+                                st.write(f"Your Prediction is {round(best_y_pred_poly[0])}")
+                            else:
+                                st.write(f"Linear Model Prediction is {round(user_pred[0])}")
+
                     except Exception as e:
                         st.error(f"Prediction Error: {e}")
                 
